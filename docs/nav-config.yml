@@ -1,0 +1,10 @@
+# Nav configuration for synced files.
+# Files listed here will have front matter injected at build time.
+# Files with their own front matter (index.md, downloads.md, etc.) are not listed here.
+#
+# nav_order: controls position in the left nav (lower numbers appear first)
+
+files:
+  Microscope.md:
+    title: "Microscope Architectural Framework"
+    nav_order: 2
