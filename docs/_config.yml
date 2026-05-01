@@ -1,21 +1,16 @@
 title: Microscope Documentation
 theme: just-the-docs
 
-# Set this to the repository name if deploying to https://<user>.github.io/<repo>
-# Leave blank if deploying to https://<user>.github.io/
-# baseurl: "/your-repo-name"
-
-# Left navigation ordering — add nav_order front matter to pages to control position
-# Pages without nav_order appear after ordered pages, alphabetically
-
-# Search
 search_enabled: true
 
-# Footer
 footer_content: "Microscope Documentation"
 
-# Exclude downloads folder contents from Jekyll processing
-# (they are served as static files)
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
 exclude:
   - Gemfile
   - Gemfile.lock
