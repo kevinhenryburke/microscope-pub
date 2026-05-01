@@ -24,7 +24,7 @@ for filename, meta in config.get("files", {}).items():
 
     front_matter = "---\n"
     for key, value in meta.items():
-        front_matter += f"{key}: {yaml.dump(value, default_flow_style=True).strip()}\n"
+        front_matter += f"{key}: {value}\n"
     front_matter += "---\n\n"
 
     path.write_text(front_matter + content)

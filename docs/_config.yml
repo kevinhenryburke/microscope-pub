@@ -3,6 +3,10 @@ theme: just-the-docs
 
 search_enabled: true
 
+mermaid:
+  # Version of mermaid to use; see https://mermaid.js.org/
+  version: "11"
+
 footer_content: "Microscope Documentation"
 
 defaults:
