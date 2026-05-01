@@ -34,7 +34,7 @@ We will start with the technical foundations..
 
 ### Installation
 
-Instructions for installing the package are [here](/docs/installation/MicroscopeInstallation.md). 
+Instructions for installing the package are [here](../docs/installation/MicroscopeInstallation.md). 
 
 ### Platform Features Utilized
 
