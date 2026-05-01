@@ -9,3 +9,7 @@ files:
     title: "Microscope Architectural Framework"
     nav_order: 2
     toc: true
+  installation/MicroscopeInstallation.md:
+    title: "Microscope Installation"
+    nav_order: 3
+    toc: true
