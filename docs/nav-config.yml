@@ -8,3 +8,4 @@ files:
   Microscope.md:
     title: "Microscope Architectural Framework"
     nav_order: 2
+    toc: true
