@@ -421,7 +421,7 @@ To implement this pattern, you can either run the relevant AI skills or check ou
 
 * **Create a new Method Iteration**: [AI Skill](../skills/microscope-new-method-version/SKILL.md) | [Documentation](../skills/microscope-new-method-version/README.md)
 * **Create a new Implementation Version**: [AI Skill](../skills/microscope-new-implementation-version/SKILL.md) | [Documentation](../skills/microscope-new-implementation-version/README.md)
- 
+
 ### Invocation Permission-Based Processing
 
 *(Different behavior for invocations for different users)*
