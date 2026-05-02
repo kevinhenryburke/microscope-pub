@@ -40,12 +40,11 @@ jobs:
 
       - name: Build with MkDocs
         run: mkdocs build --site-dir _site
-        working-directory: docs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/_site
+          path: _site
 
   deploy:
     environment:
