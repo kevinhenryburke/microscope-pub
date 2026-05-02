@@ -1,4 +1,5 @@
 site_name: Microscope Documentation
+docs_dir: .
 
 theme:
   name: material

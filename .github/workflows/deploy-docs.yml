@@ -28,7 +28,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install MkDocs and Material theme
-        run: pip install mkdocs-material
+        run: pip install "mkdocs-material>=9,<10"
 
       - name: Setup Pages
         id: pages
