@@ -1,8 +1,3 @@
----
-title: Downloads
-nav_order: 99
----
-
 # Downloads
 
 Download the latest releases and artifacts below.

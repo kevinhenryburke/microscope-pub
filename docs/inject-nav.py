@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Inject Jekyll front matter and optional TOC into synced docs files based on nav-config.yml."""
+"""Strip Jekyll front matter from synced docs files before MkDocs build.
 
+Nav order and titles are managed in mkdocs.yml, not in file front matter.
+This script ensures synced files (which may have been processed before)
+don't contain stale front matter that would render as page content.
+"""
+
+import re
 import yaml
 from pathlib import Path
 
-TOC_BLOCK = (
-    "<details markdown=\"block\">\n"
-    "  <summary>Contents</summary>\n"
-    "- TOC\n"
-    "{:toc}\n"
-    "</details>\n"
-)
+FRONT_MATTER_RE = re.compile(r"^---\n.*?\n---\n\n?", re.DOTALL)
 
 docs_dir = Path(__file__).parent
 config_path = docs_dir / "nav-config.yml"
@@ -18,35 +18,16 @@ config_path = docs_dir / "nav-config.yml"
 with open(config_path) as f:
     config = yaml.safe_load(f)
 
-for filename, meta in config.get("files", {}).items():
+for filename in config.get("files", {}):
     path = docs_dir / filename
     if not path.exists():
         print(f"WARNING: {filename} listed in nav-config.yml but not found, skipping")
         continue
 
     content = path.read_text()
-    if content.startswith("---"):
-        print(f"SKIP: {filename} already has front matter")
-        continue
-
-    inject_toc = meta.pop("toc", False)
-
-    front_matter = "---\n"
-    for key, value in meta.items():
-        front_matter += f"{key}: {value}\n"
-    front_matter += "---\n\n"
-
-    if inject_toc:
-        # Insert TOC block after the first h1 heading line
-        lines = content.splitlines(keepends=True)
-        insert_at = None
-        for i, line in enumerate(lines):
-            if line.startswith("# "):
-                insert_at = i + 1
-                break
-        if insert_at is not None:
-            lines.insert(insert_at, "\n" + TOC_BLOCK + "\n")
-            content = "".join(lines)
-
-    path.write_text(front_matter + content)
-    print(f"OK: injected front matter into {filename}" + (" with TOC" if inject_toc else ""))
+    cleaned = FRONT_MATTER_RE.sub("", content)
+    if cleaned != content:
+        path.write_text(cleaned)
+        print(f"OK: stripped front matter from {filename}")
+    else:
+        print(f"SKIP: {filename} has no front matter")

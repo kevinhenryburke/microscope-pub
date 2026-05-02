@@ -1,0 +1,23 @@
+site_name: Microscope Documentation
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - Microscope Architectural Framework: Microscope.md
+  - Microscope Installation: installation/MicroscopeInstallation.md
+  - Downloads: downloads.md
