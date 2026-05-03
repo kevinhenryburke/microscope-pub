@@ -1,4 +1,4 @@
-site_name: Microscope Documentation
+site_name: Microscope for Salesforce
 docs_dir: docs
 
 theme:
@@ -19,6 +19,8 @@ markdown_extensions:
 
 nav:
   - About Microscope: MicroscopeAbout.md
-  - Microscope Solution: MicroscopeSolution.md
-  - Microscope Installation: installation/MicroscopeInstallation.md
-  - Downloads: downloads.md
+  - Solution: MicroscopeSolution.md
+  - Installation: installation/MicroscopeInstallation.md
+  - Downloads:
+    - downloads/microscope-pdf.md
+    - downloads/microscope-skills.md
