@@ -124,14 +124,12 @@ flowchart LR
 
 The Engagement systems on the left reference **Invocation CMT** records which abstract the business functionality from the caller. These CMT records reference 3 tiers of metadata on the *Service-side*.
 
-  - High-level business capabilities are represented by **Service CMT** records. A Service might represent an external interface, abstract a large package, or encapsulate a custom platform capability developed by the Enterprise. 
-  - The individual functions exposed by a Service are represented by **Method Iteration CMT** records. These records define the method **signature**, the input and output definitions.
+  - **Service CMT** records represent High-level business capabilities. A Service might represent an external interface, abstract a large package, or encapsulate a custom platform capability developed by the Enterprise. 
+  - **Method Iteration CMT** records represent the individual functions exposed by a Service. These records define the method **signature**, the input and output definitions.
   - **Implementation CMT** records point to what actually runs, such as an Apex class or a Flow. Each runnable artifact should be self contained with references to only the bare minimum needed to implement the functionality. 
 
 ```mermaid
 flowchart LR
-
-
     subgraph sg1["Invocation Side"]
     direction LR
         INVCALL["Invocation<br>Call"]:::whiteBox
@@ -148,8 +146,8 @@ flowchart LR
     end
 
     INVCALL -."Select".-> INVMETA 
-    INVMETA --> ENGINE
-    ENGINE --> sg2 
+    INVMETA -."Soft Links".-> ENGINE
+    ENGINE -."Lookups".-> sg2 
     SVCMETHOD -.has.- IMP
     SVCMETA -.has.- SVCMETHOD
 
@@ -544,7 +542,9 @@ The following diagram shows the stub flow for the Invocation side. Note that the
 
 ```mermaid
 flowchart LR
+    Call["&nbsp;Invocation<br>Call&nbsp;"]
     Metadata[("&nbsp;Invocation<br>Record&nbsp;")]
+    style Call fill:#FFFFFF,stroke:#333,stroke-width:2px
     style Metadata fill:#FFFFFF,stroke:#333,stroke-width:2px
     
     subgraph Prod [Production Setup]
@@ -581,6 +581,8 @@ flowchart LR
         AbsentService --> RunInvocationStub2
     end
 
+    Call -."Select".-> Metadata 
+
     Metadata -->|otherwise| NoStub
     Metadata -->|if| HasStub
     Metadata -->|else if| AbsentService
@@ -599,6 +601,37 @@ Absent Connection Stubs can also act as a **Facade to a Managed Package** that i
 
 Another key use case is to provide an alternative to calling a *Prompt Template* in non-production environments. This may be useful to provide output when there is no connected LLM, deterministic output for testing business processes or simple to save on *token consumption* in lower environments. 
  
+```mermaid
+graph LR
+
+    n1["Invocation<br>Call"]
+    n2[("Invocation<br>Record")]
+    subgraph sg1["Service Side"]
+        n3[("Service Side<br>Metadata")]
+        n4{"Custom Setting<br>Present?"}
+        n5["Absent<br>Connection<br>Stub"]
+        n6["Real<br>Implementation<br>"]
+    end
+
+    n4 -->|Yes| n5[Run Scratch Stub]
+    n4 -->|No| n6[Run Implementation]
+
+
+    n1 -->|Resolve| n2
+    n2 --> n3
+    n3 --> n4
+
+    classDef whiteBox fill:#ffffff,stroke:#333,stroke-width:2px,color:#000000
+    classDef purpleBox fill:#cbaacb,stroke:#333,stroke-width:2px,color:#000000
+    classDef greenBox fill:#c1e1c1,stroke:#333,stroke-width:2px,color:#000000
+
+    class n1,n2 whiteBox
+    class n3,n6 purpleBox
+    class n5 greenBox
+    style sg1 fill:none,stroke:#333,stroke-width:1px
+```
+
+
 **How to Implement**: If you wish to implement this pattern, you can either run the relevant AI skill or check out the documentation that comes with the skill.
 
 * **Setup an Absent Connection Stub**: [AI Skill](../skills/microscope-create-absent-connection-stub/SKILL.md) | [Documentation](../skills/microscope-create-absent-connection-stub/README.md)
