@@ -1,3 +1,4 @@
-# Microscope Documentation
-
-Welcome to the public documentation.
+---
+title: Redirect
+---
+<meta http-equiv="refresh" content="0; url=MicroscopeAbout/">

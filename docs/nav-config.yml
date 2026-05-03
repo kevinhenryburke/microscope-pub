@@ -5,8 +5,12 @@
 # nav_order: controls position in the left nav (lower numbers appear first)
 
 files:
-  Microscope.md:
-    title: "Microscope Architectural Framework"
+  MicroscopeAbout.md:
+    title: "About Microscope"
+    nav_order: 1
+    toc: true
+  MicroscopeSolution.md:
+    title: "Microscope Solution"
     nav_order: 2
     toc: true
   installation/MicroscopeInstallation.md:
