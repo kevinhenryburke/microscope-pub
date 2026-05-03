@@ -2,6 +2,8 @@
 
 # Microscope Package Installation
 
+## Commands and Package URLs
+
 The main package is called **Microscope** and uses the namespace **mscope**. The latest recommended version can be installed via this link:
 
 [Microscope Package installation URL](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000DHMBIA4)
