@@ -2,11 +2,11 @@
  
 The solution builds on established Enterprise delivery concepts such as service-oriented architectures, microservices, and dependency injection, and combines them with Salesforce Lightning Platform features to create a framework that is flexible enough to handle a wide range of Enterprise challenges. Through a single paradigm, it supports Salesforce DX adoption, packaging, technical debt avoidance and mitigation, build hygiene, multiple lines of business, regional variations, prompting, Agentforce Actions, appropriate governance, release management, pilots, A/B testing, concurrent versions, environment management, responses to Gen AI prompt safety breaches, safety testing and retesting assurance, standardized security behind exposed endpoints, team onboarding and mobility, build visibility, design quality, and full runtime audit and intelligence.
 
-We will start with the technical foundations..
-
 ### Installation
 
-Instructions for installing the package are [here](../docs/installation/MicroscopeInstallation.md). 
+Instructions for installing the package are [here](https://kevinhenryburke.github.io/microscope-pub/installation/MicroscopeInstallation). 
+
+Microscope Skills, to aid AI Code Generation tools, can be downloaded from [here](https://kevinhenryburke.github.io/microscope-pub/downloads/microscope-skills). Follow the guidelines for your Coding Agent of choice for how to install these in your development environment (e.g. in a top-level *.claude* folder).
 
 ### Platform Features Utilized
 
@@ -395,9 +395,9 @@ To implement this pattern, you can either run the relevant AI skills or check ou
 
 *(Different behavior for invocations for different users)*
 
-As mentioned, calling applications invoke the framework by referencing an *Invocation Call*. This value should match the *Invocation Call* field of at least one *Invocation CMT* record. It may match more than one record because the *Invocation CMT* also has an optional field named *Invocation Permission*, which stores the API name of a Custom Permission. Records with this field populated are called **Invocation Overrides**.
+As mentioned, calling applications invoke the framework by referencing an *Invocation Call*. This value should match the *Invocation Call* field of at least one *Invocation CMT* record. It may match more than one record because the *Invocation CMT* also has an optional field named *Invocation Permission*, which stores the API name of a Custom Permission. Records with this field populated are called **Permission Overrides**.
 
-When an invocation is executed, the framework checks all Invocation Override records with the referenced *Invocation Call* value.
+When an invocation is executed, the framework initially checks all Permission Override records with the referenced *Invocation Call* value.
 
 - If the calling user has one of the referenced Custom Permissions assigned, the matching *Invocation CMT* record is used.
 
@@ -416,8 +416,8 @@ flowchart LR
     INV["Invocation<br>Call"]
     CHK{"Check Permission Assignment"}
     DEF[("Default Invocation")]
-    OVR1[("Override Invocation")]
-    OVR2[("Override Invocation")]
+    OVR1[("Permission Override")]
+    OVR2[("Permission Override")]
     IMP1["Implementation 1"]
     IMP2["Implementation 2"]
     IMP3["Implementation 3"]
@@ -438,7 +438,7 @@ Invocation Permissions can be used for both temporary and permanent situations, 
 
 #### Functional Pilots
 
-Pilot runs of new Service-side Versions for subsets of users can be provided via *Invocation Permissions*. Teams develop the pilot implementation and when it is ready to deploy create a new custom permission and a new Invocation Override CMT record that references the permission. The Override then routes the pilot users to the pilot implementation. If Invocation Permissions are already used to provide different functionality for different users, a second Invocation Permission layer may be required, and the field *Invocation Permission 2* can be used for this (see [Invocation Permission Selection](../docs/InvocationPermissionSelection.md)).
+Pilot runs of new Service-side Versions for subsets of users can be provided via *Invocation Permissions*. Teams develop the pilot implementation and when it is ready to deploy create a new custom permission and a new Permission Override CMT record that references the permission. The Override then routes the pilot users to the pilot implementation. If Invocation Permissions are already used to provide different functionality for different users, a second Invocation Permission layer may be required, and the field *Invocation Permission 2* can be used for this (see [Invocation Permission Selection](../docs/InvocationPermissionSelection.md)).
 
 If the Pilot is successful, its *Invocation CMT* record can become the new default by clearing the *Invocation Permission* field and deleting the previous default record.
 
@@ -448,7 +448,7 @@ If the Pilot is successful, its *Invocation CMT* record can become the new defau
 
 #### Segregated User Functionality
 
-Invocation Permissions can be used to provide different long-term functionality for different user groups. For example, if users from different countries should use different pricing services, we can assign a custom permission to the designated users in each country, create Invocation Override CMT records for each country referencing the country permission, and route those users to the appropriate implementation.
+Invocation Permissions can be used to provide different long-term functionality for different user groups. For example, if users from different countries should use different pricing services, we can assign a custom permission to the designated users in each country, create Permission Override CMT records referencing each country permission, and route those users to the appropriate implementation.
 
 If two levels of refinement are required, for example per country / per line of business, the *Invocation CMT* field **Invocation Permission 2** can be used. For the complete multi-permission selection process, see [Invocation Permission Selection](../docs/InvocationPermissionSelection.md).
 
@@ -456,8 +456,8 @@ If two levels of refinement are required, for example per country / per line of 
 
 Emergency Hot Fixes can be tested by a small group of users assigned a specified custom permission prior to rolling out to the full user base. These can be considered as very quick, unscheduled pilots, and the steps are the same.
 
-* Deploy a new Service-side Implementation Version 
-* Create a new *Invocation Override CMT* record with the same *Invocation Call* value but with a populated *Invocation Permission* 
+* Deploy a new Service-side Implementation Version record pointing to the fix implementation.
+* Create a new *Permission Override* record with the same *Invocation Call* value which references a new Custom Permission and points to the new implementation. 
 * Create and assign that permission to the team testing the fix
 
 The hotfix can become the default live version by clearing the *Invocation Permission* field and removing the original *Default Invocation CMT* record.
@@ -637,7 +637,7 @@ graph TB
         n3 --> n4
     end
     subgraph noStubs["Running without Stubs"]
-        n5["⚙️ 5. Invocation<br>Override<br>Service<br>Implementation"]
+        n5["⚙️ 5. Permission<br>Override<br>Service<br>Implementation"]
         n6["⚙️ 6. Default<br>Invocation<br>Service<br>Implementation"]
     end
     invSide --> svcSide
@@ -769,11 +769,11 @@ If a Prompt Template is live and a new version has been written, Enterprises typ
 
 Using Invocation Permissions, the process is as follows:
 
-1.  Permission-Based Invocation Overrides can be deployed alongside the default Invocation Metadata for the call to the Prompt Template. The override is identical to the default except that it references a (short-lived) Invocation Permission and references the newer Prompt Template.
+1.  Permission Overrides can be deployed alongside the default Invocation Metadata for the call to the Prompt Template. The override is identical to the default except that it references a (short-lived) Invocation Permission and references the newer Prompt Template.
 
 2.  A group of Pilot Users is assigned the Invocation Permission and these will run the newer version of the Prompt Template. The majority of users without the permission continue to use the older version.
 
-3.  When the pilot is deemed successful, the Invocation Permission and the Invocation Override CMT record are removed and the default *Invocation CMT* record is altered to reference the newer Prompt Template.
+3.  When the pilot is deemed successful, the Invocation Permission and the Permission Override  record are removed and the default *Invocation CMT* record is altered to reference the newer Prompt Template.
 
 Benefits include:
 
@@ -783,9 +783,9 @@ Benefits include:
 
 Prompt Templates and Agentforce Actions provide a single implementation for all users in an org. Users from different roles, divisions or countries in an Enterprise can require both custom prompts and custom grounding for those prompts.
 
-Using Permission-Based Invocation Overrides for an Invocation Call that uses the Prompt Service, and assigning different custom permissions to groups of users, can run different Prompt Templates for them.
+Using Permission Overrides for an Invocation Call that uses the Prompt Service, and assigning different custom permissions to groups of users, can run different Prompt Templates for them.
 
-The example below shows a scenario with specific custom permissions for users in Spain and Germany, with users from those countries taken to their own specific prompt templates via Permission-Based Invocation Overrides, shown in yellow. All other users, who do not have either permission, are routed via the default Invocation metadata record to an implementation which in this example does not interface to an LLM.
+The example below shows a scenario with specific custom permissions for users in Spain and Germany, with users from those countries taken to their own specific prompt templates via Permission Overrides, shown in yellow. All other users, who do not have either permission, are routed via the default Invocation metadata record to an implementation which in this example does not interface to an LLM.
 
 ![Regional Custom Permissions for Prompt Variations](images/media/RegionalCustomPermissionsforPromptVariations.png)
 

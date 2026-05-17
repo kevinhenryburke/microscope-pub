@@ -6,17 +6,17 @@
 
 The main package is called **Microscope** and uses the namespace **mscope**. The latest recommended version can be installed via this link:
 
-[Microscope Package installation URL](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000DHMBIA4)
+[Microscope Package installation URL](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000DHMzIAO)
 
 Alternatively you can install the package using the SFDX CLI, for example:
 
 ```bash
-sf package install --package 04tJ7000000DHMBIA4 --target-org <target-org> --wait 20
+sf package install --package 04tJ7000000DHMzIAO --target-org <target-org> --wait 20
 ```
 
 We recommend that you install the app for Administrators only, the objects or reports are needed for administrative users only and not by end users of the org. Additional sharing of reports and objects might be needed for business analysis and in the case can be shared to other non-admin users using the standard platform folder and object sharing techniques (e.g. permission sets and groups).
 
-Sometimes there will be a separate pre-release version of the package available. If so, you can install it using the above commands but replacing the Subscriber Package Version Id. The latest pre-release version is: 04tJ7000000DHMBIA4.
+Sometimes there will be a separate pre-release version of the package available. If so, you can install it using the above commands but replacing the Subscriber Package Version Id. The latest pre-release version is: 04tJ7000000DHMzIAO.
 
 
 ### Platform Cache

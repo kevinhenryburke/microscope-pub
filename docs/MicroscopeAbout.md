@@ -6,22 +6,27 @@ Enterprise Salesforce orgs become harder to understand as they grow. Teams lose 
 
 This application addresses that problem and solves several others by splitting a complex org's customisations into **business-aligned partitions**. Links between those partitions are **decoupled**, **abstracted**, and managed through **custom metadata** at an architectural level. Reporting and visualizations over that metadata let teams understand how the org is structured through a macro-level business lens.
 
-There are many beneficial features:
+## Key Benefits of the Microscope Framework
 
-- It defines a **holistic, multi-faceted, architecture at scale pattern** which puts metadata control at the heart of the architecture, which provides clarity and business insights. It also provides a companion process for architectural delivery that teams need to deliver consistently and predictably.
+1. **Org clarity at scale** — Metadata-controlled connections between business-aligned partitions make it possible to understand how functions, code, and dependencies connect at a macro level, reversing the visibility loss that accumulates in large Enterprise orgs.
 
-- Decoupling promotes the use of very clearly scoped **Services**. Enterprises can create **concurrent versions**, which can be released quickly and independently. It solves the existing problems of supporting **phased adoption** and instant **rollback**.
+2. **Decoupled, independently releasable services** — Business logic is abstracted behind a service layer so individual functions can be changed, versioned, and released independently without cascading impact on calling code across Apex, Flow, OmniStudio, or Agentforce.
 
-- Platform permissioning features for users (**Custom Permissions**) can be used to override metadata so that different behaviors for different users or environments can be facilitated. This greatly simplifies the challenges enterprises face in delivering regional processing variations across multiple markets. This need will increase with wider adoption of Gen AI functionality like **Prompt Templates** and **Agentforce Actions**.
+3. **Concurrent versioning and instant rollback** — New implementations deploy alongside existing ones and are activated via metadata, enabling feature-flagging, phased adoption, zero-downtime upgrades, and one-step rollback without code changes.
 
-- It allows for **piloting** and **A/B testing** of functionality for groups of suitably permissioned users in a new and structured way. This can be applied to pilot changes to Prompt Templates and Agentforce Actions.
+4. **Permission-driven variations** — Custom Permissions route different users to different implementations, supporting regional variations, segregated business lines, pilots, and A/B testing from a single configuration model — including for Prompt Templates and Agentforce Actions.
 
-- The decoupled architecture allows for switchable alternative processing in environments that can be directed by using **Custom Settings**. The alternates may be simulated responses in development and testing contexts or failover outage processing in production. This approach is superior to the norm of mocking interfaces as it is standardized and configuration-controlled and allows very quick switching to alternative processing.
+5. **Environment variations** — Switchable stub patterns handle partial-code orgs, disconnected test environments, and production outages through Administrator driven or scripted switching via Custom Settings.
 
-- The application **audits** every call across each connection, creating a single source of processing and error information across the org. The core platform does not provide an equivalent easy-to-use, standardized transactional log.
+6. **Universal audit trail with call stack** — Every invocation is logged in a consistent, flat structure across the entire org, capturing user, context, permissions, input/output, and errors — with linked parent/child records for composed and asynchronous call chains.
 
-- The application audit provides a critical new data source that can be uploaded to business intelligence platforms through simple configuration. User interactions can be captured in Salesforce **Data 360**, enriching the overall customer view and providing a valuable new data source for generative AI grounding and summarization.
+7. **Business intelligence and AI grounding** — The single audit data source can be uploaded to Data 360 and CRM Analytics through configuration-only tooling, enriching the customer view and providing grounding data for Generative AI summarization and predictive functions.
 
-- Dependencies are managed through decoupling and abstraction. This approach complements and facilitates greater use of **Salesforce DX packaging**, which is hard to adopt in Enterprises due to org complexity. The application also contains a structured approach to remediating technical debt.
+8. **Transaction reruns** — Failed or historic invocations can be replayed directly from the Audit table using the original input and context — a capability unique to this framework on the Salesforce platform.
 
-- The application audit supports **rerunning of transactions**, which is unique to this platform.
+9. **Generative AI governance end-to-end** — Prompt Templates and Agentforce Actions gain the same service controls as any other invocation: auditing with Einstein Trust Layer safety scores, threshold-based blocking and failover, permission-based prompt routing by region or role, and safe in-production prompt upgrades.
+
+10. **DX packaging and technical debt remediation** — Soft metadata references between caller and service sides allow partial-code deployments in scratch orgs and unlocked packages, complementing Salesforce DX adoption by minimising dependencies and providing a structured path for identifying and removing obsolete implementations.
+
+
+*Microscope* also provides a companion process for architectural delivery that teams need to deliver consistently and predictably.
