@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microscope – Salesforce Service Framework</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #252836;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --text: #e8eaf6;
+    --text-dim: #9ba4c0;
+    --border: #2e3250;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Slide container ── */
+  .deck {
+    position: relative;
+    width: 100%;
+    max-width: 980px;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slide {
+    position: absolute;
+    width: 100%;
+    padding: 48px 56px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 100;
+  }
+
+  .nav button {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav button:hover { background: var(--accent); border-color: var(--accent); }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  .nav button:disabled:hover { background: var(--surface2); border-color: var(--border); }
+
+  .progress {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+  }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--accent); transform: scale(1.5); }
+
+  .slide-count {
+    font-size: 12px;
+    color: var(--text-dim);
+    min-width: 48px;
+    text-align: center;
+  }
+
+  /* ── Typography ── */
+  .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-size: 54px;
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  h2 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  h2 em { font-style: normal; color: var(--accent); }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  p, li {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .subtitle {
+    font-size: 20px;
+    color: var(--text-dim);
+    max-width: 580px;
+  }
+
+  /* ── Cards ── */
+  .cards {
+    display: grid;
+    gap: 16px;
+  }
+  .cards.cols-2 { grid-template-columns: 1fr 1fr; }
+  .cards.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cards.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+  }
+  .card .icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .card p, .card li { font-size: 14px; }
+
+  .card.accent-left {
+    border-left: 3px solid var(--accent);
+  }
+  .card.accent-green { border-left: 3px solid var(--accent2); }
+  .card.accent-red   { border-left: 3px solid var(--accent3); }
+  .card.accent-yellow{ border-left: 3px solid var(--accent4); }
+
+  /* ── Flow diagram ── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .flow-step {
+    flex: 1;
+    padding: 18px 16px;
+    text-align: center;
+    position: relative;
+  }
+  .flow-step:not(:last-child)::after {
+    content: '›';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: var(--accent);
+    z-index: 1;
+  }
+  .flow-step .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .flow-step p { font-size: 13px; }
+  .flow-step h3 { font-size: 14px; margin-bottom: 4px; }
+
+  /* ── Architecture diagram ── */
+  .arch {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .arch-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .arch-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--accent);
+    font-size: 28px;
+    gap: 4px;
+    flex: 0 0 40px;
+  }
+  .arch-arrow span {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    writing-mode: horizontal-tb;
+    letter-spacing: 1px;
+  }
+
+  .box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .box .tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .box h3 { font-size: 14px; margin: 0; }
+  .box p { font-size: 12px; margin-top: 4px; }
+
+  .box.highlight {
+    background: linear-gradient(135deg, #1e1b4b, #1a1d27);
+    border-color: var(--accent);
+  }
+
+  /* ── Table ── */
+  .table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table th {
+    background: var(--surface2);
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  .table td {
+    padding: 10px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .table tr:last-child td { border-bottom: none; }
+  .table td:first-child { color: var(--accent); font-weight: 600; }
+  .table tr:hover td { background: var(--surface2); }
+
+  /* ── Pill ── */
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .pill-purple { background: rgba(108,99,255,0.2); color: var(--accent); }
+  .pill-green  { background: rgba(0,212,170,0.2);  color: var(--accent2); }
+  .pill-red    { background: rgba(255,107,107,0.2); color: var(--accent3); }
+  .pill-yellow { background: rgba(255,209,102,0.2); color: var(--accent4); }
+
+  /* ── Callout ── */
+  .callout {
+    background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(0,212,170,0.08));
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+  }
+  .callout p { color: var(--text); font-size: 16px; }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); }
+
+  /* ── Code ── */
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 13px;
+    background: var(--surface2);
+    color: var(--accent2);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  /* ── Version chain ── */
+  .version-chain {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .vc-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .vc-row:last-child { border-bottom: none; }
+  .vc-row .vc-icon { font-size: 20px; flex: 0 0 30px; }
+  .vc-row .vc-label { font-size: 14px; font-weight: 600; min-width: 180px; }
+  .vc-row .vc-desc { font-size: 13px; color: var(--text-dim); }
+  .vc-indent { padding-left: 36px; }
+  .vc-indent2 { padding-left: 72px; }
+
+  .tree-connector {
+    color: var(--text-dim);
+    font-family: monospace;
+    font-size: 13px;
+    padding-left: 30px;
+    margin-top: -4px;
+    margin-bottom: 4px;
+    color: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 1 — Title
+  ════════════════════════════════════════════ -->
+  <div class="slide active" id="slide-0">
+    <div class="label">Salesforce Service Framework</div>
+    <h1>Microscope</h1>
+    <p class="subtitle">A metadata-driven microservices layer for Salesforce — bringing visibility, versioning, governance, and audit to every service call in your org.</p>
+    <div class="cards cols-3" style="margin-top:8px;">
+      <div class="card" style="text-align:center;">
+        <span class="icon">🔍</span>
+        <h3>Visibility</h3>
+        <p>See every connection between callers and services in configuration, not code.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <span class="icon">🧩</span>
+        <h3>Decoupling</h3>
+        <p>Callers reference a name, never a class. Swap implementations without touching callers.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <span class="icon">📋</span>
+        <h3>Audit</h3>
+        <p>Every invocation is logged, linked, and replayable — automatically.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 2 — The Problem
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-1">
+    <div class="label">The Challenge</div>
+    <h2>Why does this <em>exist</em>?</h2>
+    <div class="cards cols-2">
+      <div class="card accent-red">
+        <span class="icon">🌑</span>
+        <h3>Hidden dependencies</h3>
+        <p>As orgs grow, connections between engagement systems (LWC, Flows, Agentforce) and business logic are buried in code — invisible to architects and admins.</p>
+      </div>
+      <div class="card accent-red">
+        <span class="icon">🔒</span>
+        <h3>Tight coupling</h3>
+        <p>Calling code references concrete Apex classes directly. Changing an implementation means changing every caller — across teams, packages, and releases.</p>
+      </div>
+      <div class="card accent-red">
+        <span class="icon">📭</span>
+        <h3>No audit trail</h3>
+        <p>Service calls leave no record. Debugging failures, reconciling data, or proving compliance requires log archaeology.</p>
+      </div>
+      <div class="card accent-red">
+        <span class="icon">🏛️</span>
+        <h3>Governance bottlenecks</h3>
+        <p>Regional or line-of-business variations must go through a single enterprise release. No way to safely pilot changes for a subset of users.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 3 — Core Concept
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-2">
+    <div class="label">Core Concept</div>
+    <h2>One name. <em>Any implementation.</em></h2>
+    <div class="callout">
+      <p>The caller references a single string — an <strong>Invocation Call</strong>. The framework resolves which service, method, and implementation to run based on metadata. The caller never imports or instantiates anything.</p>
+    </div>
+    <div class="arch">
+      <div class="arch-col">
+        <div class="box" style="border-color: var(--accent3);">
+          <span class="tag" style="color: var(--accent3);">Caller (Engagement)</span>
+          <h3>LWC / Flow / Agent</h3>
+          <p>Calls <code>"GetAccountSummary"</code></p>
+        </div>
+      </div>
+      <div class="arch-arrow">→<span>Invocation<br>Call</span></div>
+      <div class="arch-col">
+        <div class="box highlight">
+          <span class="tag">Metadata (CMT)</span>
+          <h3>Invocation__mdt</h3>
+          <p>Maps name → service + method + version</p>
+        </div>
+      </div>
+      <div class="arch-arrow">→<span>Resolved<br>Route</span></div>
+      <div class="arch-col">
+        <div class="box" style="border-color: var(--accent2);">
+          <span class="tag" style="color: var(--accent2);">Service (Business Logic)</span>
+          <h3>Apex Class / Flow</h3>
+          <p>The actual implementation — swappable without touching callers</p>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:14px;">The Invocation Call string is the <strong>only coupling point</strong> — used exactly once in the codebase.</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 4 — Three-Tier Architecture
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-3">
+    <div class="label">Architecture</div>
+    <h2>Three-tier <em>metadata</em> model</h2>
+    <div class="version-chain">
+      <div class="vc-row">
+        <div class="vc-icon">📞</div>
+        <div class="vc-label"><span class="pill pill-red">Invocation Side</span></div>
+        <div class="vc-desc">LWC controllers, Flow actions, OmniStudio, Agentforce — the callers. Know only the Invocation Call string.</div>
+      </div>
+      <div class="vc-row vc-indent">
+        <div class="vc-icon">📋</div>
+        <div class="vc-label"><code>Invocation__mdt</code></div>
+        <div class="vc-desc">Translation layer. Maps caller → service name, version, method, and implementation version. No hard lookups — soft links by name only.</div>
+      </div>
+      <div class="vc-row">
+        <div class="vc-icon">⚙️</div>
+        <div class="vc-label"><span class="pill pill-green">Service Side</span></div>
+        <div class="vc-desc">Three levels of service metadata, resolved at runtime.</div>
+      </div>
+      <div class="vc-row vc-indent">
+        <div class="vc-icon">🏢</div>
+        <div class="vc-label"><code>Service__mdt</code></div>
+        <div class="vc-desc">High-level business capability. e.g. "Pricing Service v1"</div>
+      </div>
+      <div class="vc-row vc-indent">
+        <div class="vc-icon">📐</div>
+        <div class="vc-label"><code>Service_Method__mdt</code></div>
+        <div class="vc-desc">Individual function with a fixed input/output contract (Method Iteration). Changing the schema requires a new iteration.</div>
+      </div>
+      <div class="vc-row vc-indent">
+        <div class="vc-icon">🧱</div>
+        <div class="vc-label"><code>Service_Implementation__mdt</code></div>
+        <div class="vc-desc">Points to the Apex class or Flow that runs. Multiple versions can coexist for A/B testing, rollback, and pilots.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 5 — Call Flow
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-4">
+    <div class="label">Runtime</div>
+    <h2>How a call <em>flows</em> through Microscope</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="num">1</div>
+        <h3>Invoke</h3>
+        <p>Caller passes Invocation Call string to <code>ServiceInvocation</code></p>
+      </div>
+      <div class="flow-step">
+        <div class="num">2</div>
+        <h3>Retrieve</h3>
+        <p>Query <code>Invocation__mdt</code> — apply permission filters, select matching record</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">3</div>
+        <h3>Resolve</h3>
+        <p>Query Service, Method, and Implementation metadata — check variants</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">4</div>
+        <h3>Execute</h3>
+        <p>Instantiate Apex class or launch Flow. Sync, Async, or Queueable.</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">5</div>
+        <h3>Audit</h3>
+        <p>Write <code>Service_Framework_Audit__c</code> record with input, output, timing, context</p>
+      </div>
+    </div>
+    <div class="cards cols-2" style="margin-top: 4px;">
+      <div class="card">
+        <h3>InvocationDetails</h3>
+        <p>The central data envelope — carries user context, permission selections, input/output, timing, errors, and audit GUID through every step of the call.</p>
+      </div>
+      <div class="card">
+        <h3>IImplementation</h3>
+        <p>Every implementation (Apex or Flow) implements this interface. The framework instantiates it via <code>Type.forName()</code> — zero static references from the framework to your code.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 6 — Versioning
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-5">
+    <div class="label">Versioning</div>
+    <h2>Multiple live versions, <em>zero</em> flag days</h2>
+    <div class="cards cols-3">
+      <div class="card accent-left">
+        <h3>Service Version</h3>
+        <p>A complete re-implementation in a new namespace package. Allows reuse of class names across major versions.</p>
+      </div>
+      <div class="card accent-left">
+        <h3>Method Iteration</h3>
+        <p>Version of the method <em>signature</em>. Increments when inputs or outputs change. All implementations for the same iteration share the same I/O contract.</p>
+      </div>
+      <div class="card accent-left">
+        <h3>Implementation Version</h3>
+        <p>Version of the implementation <em>logic</em>. Multiple can run concurrently — enables A/B tests, pilots, and instant rollback.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>No-Edit principle:</strong> never modify an existing implementation. Instead, create a new version. The old one stays deployed for instant rollback. Leave the Implementation Version blank on <code>Invocation__mdt</code> to always auto-select the latest.</p>
+    </div>
+    <div class="cards cols-2">
+      <div class="card">
+        <h3>Concurrent versions in production</h3>
+        <p>v1 stays live for users without the pilot permission. v2 is routed to pilot users via an Invocation Permission. Both run from the same metadata, no branching in code.</p>
+      </div>
+      <div class="card">
+        <h3>Instant rollback</h3>
+        <p>Remove the v2 invocation record. The framework falls back to the default record pointing at v1. No deployment needed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 7 — Permissions & Routing
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-6">
+    <div class="label">Governance</div>
+    <h2>Permission-driven <em>routing</em></h2>
+    <p style="color: var(--text);">Multiple <code>Invocation__mdt</code> records can exist for the same Invocation Call. The framework picks the first one whose permission the user holds.</p>
+    <div class="version-chain" style="margin-top: 4px;">
+      <div class="vc-row">
+        <div class="vc-icon">🚦</div>
+        <div class="vc-label"><strong>Release Permission</strong></div>
+        <div class="vc-desc">Org-wide gate — controls access to an entire feature release.</div>
+      </div>
+      <div class="vc-row">
+        <div class="vc-icon">🌍</div>
+        <div class="vc-label"><strong>Invocation Permission</strong></div>
+        <div class="vc-desc">First segmentation — e.g. route EMEA users to a different implementation than US users.</div>
+      </div>
+      <div class="vc-row">
+        <div class="vc-icon">🏢</div>
+        <div class="vc-label"><strong>Invocation Permission 2</strong></div>
+        <div class="vc-desc">Second segmentation — e.g. further split by line-of-business within a region.</div>
+      </div>
+      <div class="vc-row">
+        <div class="vc-icon">🔐</div>
+        <div class="vc-label"><strong>Security Permission</strong></div>
+        <div class="vc-desc">Final access gate — applied after selection. Falls back to a less-specific implementation if not held.</div>
+      </div>
+      <div class="vc-row">
+        <div class="vc-icon">✅</div>
+        <div class="vc-label"><strong>Default (no permission)</strong></div>
+        <div class="vc-desc">The catch-all record — any user not matched by a permission rule lands here.</div>
+      </div>
+    </div>
+    <p style="font-size:14px; color: var(--text-dim);">Quiddity restrictions additionally prevent calls from wrong contexts (e.g. block a batch-only method from an LWC).</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 8 — Stubs & Environments
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-7">
+    <div class="label">Resilience</div>
+    <h2>Stubs for every <em>environment</em></h2>
+    <div class="cards cols-2">
+      <div class="card accent-yellow">
+        <span class="icon">🧪</span>
+        <h3>Scratch Stub</h3>
+        <p>Temporary override via Custom Setting. Lets a unit test inject a known response without touching metadata. Cleared automatically.</p>
+      </div>
+      <div class="card accent-yellow">
+        <span class="icon">📦</span>
+        <h3>Absent Service Stub</h3>
+        <p>Runs when the Service CMT doesn't exist in the target org — perfect for partial-code unlocked package deployments in scratch orgs.</p>
+      </div>
+      <div class="card accent-red">
+        <span class="icon">🔴</span>
+        <h3>Down Status Stub</h3>
+        <p>Triggered when a service is marked unavailable (e.g. external dependency is down). Captures data, returns a graceful response.</p>
+      </div>
+      <div class="card accent-red">
+        <span class="icon">🔌</span>
+        <h3>Absent Connection Stub</h3>
+        <p>Alternate method path when an external integration is unavailable in this environment (e.g. no callout in sandboxes).</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>Priority order:</strong> Scratch → Absent Service → Down Status → Absent Connection → Permission Override → Default</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 9 — Audit & Observability
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-8">
+    <div class="label">Observability</div>
+    <h2>Complete call history, <em>automatically</em></h2>
+    <div class="cards cols-2">
+      <div class="card accent-left">
+        <h3>Dual Audit Points</h3>
+        <p><span class="pill pill-purple">Invoker</span> Written immediately after invocation. Records input, permissions used, timing start.</p>
+        <br/>
+        <p><span class="pill pill-green">Service</span> Written when async execution completes. Updates the same record with output and final state.</p>
+      </div>
+      <div class="card accent-left">
+        <h3>Hierarchical call tracking</h3>
+        <p>Each invocation gets a GUID with a position path:</p>
+        <br/>
+        <p><code>ctx-123.1</code> — top level call</p>
+        <p><code>ctx-123.1.2</code> — nested child call</p>
+        <p><code>ctx-123.1.2.1</code> — grandchild (up to 5 deep)</p>
+        <br/>
+        <p>Parent/child relationships stored on audit records — full call graph reconstructable.</p>
+      </div>
+    </div>
+    <div class="cards cols-3" style="margin-top: 4px;">
+      <div class="card">
+        <h3>Rerun</h3>
+        <p>Stored input can be deserialized and re-invoked. Replay failed transactions after a fix.</p>
+      </div>
+      <div class="card">
+        <h3>Custom Serialization</h3>
+        <p>Implement <code>ICustomAudit</code> to mask PII, summarize large payloads, or apply compliance transformations.</p>
+      </div>
+      <div class="card">
+        <h3>Build Map</h3>
+        <p>Metadata graph of all Invocation → Service → Implementation links. Shows active, redundant, and orphaned connections.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 10 — AI / Agentforce Governance
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-9">
+    <div class="label">AI Governance</div>
+    <h2>Safe, audited <em>AI invocations</em></h2>
+    <p style="color: var(--text);">Prompts and AI model calls flow through the same service framework as any other invocation — no special path.</p>
+    <div class="cards cols-3" style="margin-top: 4px;">
+      <div class="card accent-left">
+        <h3>Trust Layer Scores</h3>
+        <p>Einstein Trust Layer safety scores are captured in the audit record on every AI call. Every prompt output is traceable.</p>
+      </div>
+      <div class="card accent-left">
+        <h3>Safety Thresholds</h3>
+        <p>Three configurable thresholds:<br/>
+        <span class="pill pill-red">Fatal</span> Block + create Down Stub<br/>
+        <span class="pill pill-yellow">Error</span> Run alternate implementation<br/>
+        <span class="pill pill-green">Warn</span> Log only, proceed</p>
+      </div>
+      <div class="card accent-left">
+        <h3>Failover Algorithms</h3>
+        <p><strong>Given Order</strong> — run templates in sequence<br/>
+        <strong>Recent Safest</strong> — query audit history, run safest-first<br/>
+        <strong>Run All, Return Safest</strong> — execute all, return best score</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p>AI prompts benefit automatically from Microscope versioning, regional routing, audit, and stubs — the same governance as any service call, applied to every LLM interaction.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 11 — Benefits Summary
+  ════════════════════════════════════════════ -->
+  <div class="slide" id="slide-10">
+    <div class="label">Summary</div>
+    <h2>What Microscope <em>delivers</em></h2>
+    <table class="table">
+      <tr>
+        <th>Capability</th>
+        <th>What it means in practice</th>
+      </tr>
+      <tr>
+        <td>Visibility</td>
+        <td>Every service connection visible in metadata — not buried in code. Architects can query the entire map.</td>
+      </tr>
+      <tr>
+        <td>Decoupling</td>
+        <td>Callers never reference implementations. Services can be rewritten, moved, or replaced without touching callers.</td>
+      </tr>
+      <tr>
+        <td>Versioning</td>
+        <td>Concurrent live versions, zero flag days. Instant rollback by updating a CMT record.</td>
+      </tr>
+      <tr>
+        <td>Governance</td>
+        <td>Permission-based routing gives regional teams autonomy without a global deployment.</td>
+      </tr>
+      <tr>
+        <td>Audit</td>
+        <td>Full call stack, linked async calls, replayable transactions — automatically on every invocation.</td>
+      </tr>
+      <tr>
+        <td>Resilience</td>
+        <td>Stubs for every scenario: scratch orgs, partial deployments, outages, test environments.</td>
+      </tr>
+      <tr>
+        <td>AI Safety</td>
+        <td>Trust Layer integration, prompt failover, toxicity blocking — all audited and version-controlled.</td>
+      </tr>
+    </table>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <button id="prev" disabled title="Previous">‹</button>
+  <div class="progress" id="dots"></div>
+  <button id="next" title="Next">›</button>
+  <span class="slide-count" id="count">1 / 11</span>
+</nav>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsEl  = document.getElementById('dots');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const countEl = document.getElementById('count');
+  let current = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    if (n < 0 || n >= slides.length) return;
+    const dir = n > current ? 1 : -1;
+
+    slides[current].classList.remove('active');
+    slides[current].classList.add(dir > 0 ? 'exit-left' : '');
+    setTimeout(() => slides[current === n ? current : current].classList.remove('exit-left'), 400);
+
+    current = n;
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+
+    dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    countEl.textContent = `${current + 1} / ${slides.length}`;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+</script>
+</body>
+</html>
