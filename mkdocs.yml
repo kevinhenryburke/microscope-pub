@@ -2,6 +2,8 @@ site_name: Microscope for Salesforce
 docs_dir: docs
 exclude_docs: |
   skills/shared/objects
+  skills/shared/examples/invocations
+  skills/shared/examples/services
 
 theme:
   name: material
