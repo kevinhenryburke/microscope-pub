@@ -14,7 +14,7 @@ The solution uses a combination of Lightning Platform features.
 
 - Custom Metadata Types (*CMTs*) to define the structure of the production build and the mechanisms for special processing in *lower orgs* (scratch orgs and sandboxes).
 
-- Custom Settings for temporary changes in production and to configure features that vary across environments.
+- Custom Settings for temporary changes in production and to configure features that vary across environments. CMT records are the same across all test environments; Custom Settings are only used when environmental differences occur.**
 
 - Custom Permissions to enable differences in processing for different groups of users.
 
@@ -658,54 +658,7 @@ graph TB
 
 ### Security Benefits
 
-#### Restricting Invocations By Permission
-
-The application can restrict the running of an Invocation to only those users with a custom permission assigned. This is achieved by having an *Invocation CMT record* with the *Security Permission* field populated.
-
-*Security Permission* acts as a final gate in the candidate selection process. After the Release Permission and Invocation Permission checks identify a candidate Invocation record, the Security Permission is checked last. If the user does not hold the Security Permission, that candidate is skipped and the next candidate is evaluated. If no candidate passes the Security Permission check, an `UNPERMISSIONED_USER` error is raised. This can be logged in the Audit table to alert administrators that a user or application has attempted to access functionality they are not authorized to use.
-
-```mermaid
-flowchart LR
-    A[(Invocation)]:::white --> B{"Security Perm<br>Required?"}
-    B -->|Yes| C{"User Has Perm?"}
-    B --> |No|D[Run Implementation]:::purple
-    C -->|Yes| E[Run Implementation]:::purple
-    C --> |No|F[Don't Run]:::red
-
-    classDef white fill:#ffffff,stroke:#555555,color:#000000
-    classDef red fill:#FF9090,stroke:#444444,color:#000000
-    classDef purple fill:#D8B4FE,stroke:#444444,color:#000000
-```
-
-For the complete multi-permission selection process, see [Invocation Permission Selection](../docs/InvocationPermissionSelection.md).
-
-#### Restricting Invocations By Context
-
-The *Invocation CMT* field *Allowed Quiddity* restricts execution to only the intended Execution Contexts. This reduces the risk of misuse, whether caused by malice (hostile agents), human error or bad practice (e.g. calling a method written for an LWC controller from another Apex class). In particular, this adds an extra layer of security for endpoints exposed to the internet via a simple configuration setting.
-
-For example, if *Allowed Quiddity* is set to "REST" then an "AURA" quiddity would be rejected. 
-
-```mermaid
-graph LR
-
-    n1["&nbsp;<br>Invocation<br>Call&nbsp;"]
-    n2[("&nbsp;<br>Invocation<br>Record&nbsp;")]
-    n3{"&nbsp;<br>&nbsp;Quiddity&nbsp;<br>&nbsp;Check&nbsp;"}
-    n4["Service<br>Side<br>&nbsp;Processing&nbsp;"]
-
-    n1 -->|Resolve| n2
-    n2 --> n3
-    n3 -->|"SOAP (error)"|n1 
-    n3 --> |"REST (allowed)"|n4
-
-    classDef whiteBox fill:#ffffff,stroke:#333,stroke-width:2px,color:#000000
-    classDef purpleBox fill:#cbaacb,stroke:#333,stroke-width:2px,color:#000000
-
-    class n1,n2,n3 whiteBox
-    class n4 purpleBox
-
-    linkStyle 2 stroke:red;
-```
+Microscope provides permission-based and context-based mechanisms to restrict when and by whom an Invocation can be run. See [Microscope Security](../docs/MicroscopeSecurity.md) for the full details, including quiddity reference tables, unit test exemptions, and guidance on exposing invocations to external systems.
 
 ## Generative AI Benefits
 
