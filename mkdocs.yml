@@ -1,5 +1,7 @@
 site_name: Microscope for Salesforce
 docs_dir: docs
+exclude_docs: |
+  skills/shared/objects
 
 theme:
   name: material
