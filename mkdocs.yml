@@ -20,7 +20,9 @@ markdown_extensions:
 nav:
   - About Microscope: MicroscopeAbout.md
   - Solution: MicroscopeSolution.md
+  - Security: MicroscopeSecurity.md
   - Installation: installation/MicroscopeInstallation.md
+  - Developer Guide: MicroscopeDeveloperGuide.md
   - Downloads:
     - downloads/microscope-pdf.md
     - downloads/microscope-skills.md
