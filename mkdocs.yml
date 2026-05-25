@@ -27,12 +27,10 @@ nav:
   - Security: MicroscopeSecurity.md
   - Installation: installation/MicroscopeInstallation.md
   - Developer Guide: MicroscopeDeveloperGuide.md
-  - Downloads:
-    - downloads/microscope-pdf.md
-    - downloads/microscope-skills.md
-  - Skills Library:
-    - Download: downloads/microscope-skills.md)
-    - Skills:
+    - Downloads:
+      - downloads/microscope-pdf.md
+      - downloads/microscope-skills.md
+    - Skills Library:
       - Create Absent Connection Stub: skills/microscope-create-absent-connection-stub/SKILL.md
       - Create Absent Service Stub: skills/microscope-create-absent-service-stub/SKILL.md
       - Create Down Status Stub: skills/microscope-create-down-status-stub/SKILL.md
