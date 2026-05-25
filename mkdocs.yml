@@ -30,17 +30,16 @@ nav:
   - Downloads:
     - downloads/microscope-pdf.md
     - downloads/microscope-skills.md
-  - Skills Library:
-    - Skills:
-      - Create Absent Connection Stub: skills/microscope-create-absent-connection-stub/SKILL.md
-      - Create Absent Service Stub: skills/microscope-create-absent-service-stub/SKILL.md
-      - Create Down Status Stub: skills/microscope-create-down-status-stub/SKILL.md
-      - Create Scratch Stub: skills/microscope-create-scratch-stub/SKILL.md
-      - New Apex Invocation: skills/microscope-new-apex-invocation/SKILL.md
-      - New Implementation Version: skills/microscope-new-implementation-version/SKILL.md
-      - New Invocation Record: skills/microscope-new-invocation-record/SKILL.md
-      - New Method Setup: skills/microscope-new-method-setup/SKILL.md
-      - New Method Version: skills/microscope-new-method-version/SKILL.md
-      - New Pilot: skills/microscope-new-pilot/SKILL.md
-      - Refactor Invocable Action Apex: skills/microscope-refactor-invocable-action-apex/SKILL.md
-      - Refactor Method: skills/microscope-refactor-method/SKILL.md
+  - Skills:
+    - Create Absent Connection Stub: skills/microscope-create-absent-connection-stub/SKILL.md
+    - Create Absent Service Stub: skills/microscope-create-absent-service-stub/SKILL.md
+    - Create Down Status Stub: skills/microscope-create-down-status-stub/SKILL.md
+    - Create Scratch Stub: skills/microscope-create-scratch-stub/SKILL.md
+    - New Apex Invocation: skills/microscope-new-apex-invocation/SKILL.md
+    - New Implementation Version: skills/microscope-new-implementation-version/SKILL.md
+    - New Invocation Record: skills/microscope-new-invocation-record/SKILL.md
+    - New Method Setup: skills/microscope-new-method-setup/SKILL.md
+    - New Method Version: skills/microscope-new-method-version/SKILL.md
+    - New Pilot: skills/microscope-new-pilot/SKILL.md
+    - Refactor Invocable Action Apex: skills/microscope-refactor-invocable-action-apex/SKILL.md
+    - Refactor Method: skills/microscope-refactor-method/SKILL.md
