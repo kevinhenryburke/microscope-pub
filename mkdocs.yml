@@ -32,8 +32,8 @@ nav:
 
   - Resources:
     - Downloads:
-      - Solution PDF:downloads/microscope-pdf.md
-      - Skills ZIP:downloads/microscope-skills.md
+      - Solution PDF: downloads/microscope-pdf.md
+      - Skills ZIP: downloads/microscope-skills.md
     - Skills Library:
       - Create Absent Connection Stub: skills/microscope-create-absent-connection-stub/SKILL.md
       - Create Absent Service Stub: skills/microscope-create-absent-service-stub/SKILL.md
