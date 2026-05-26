@@ -47,10 +47,12 @@ The class replaces a method in a larger class with a single-method class. The `i
 Create these Custom Metadata records in order from Setup:
 
 **Service**
+
 - Label / Service Name: `Client`
 - Description: (min 10 characters)
 
 **Method Iteration**
+
 - Label / Name: `Client_getRating_1` (max 25 characters)
 - Service: `Client`
 - Method: `getRating`
@@ -58,12 +60,14 @@ Create these Custom Metadata records in order from Setup:
 - Output Definition: `String`
 
 **Service Implementation**
+
 - Label / Name: `Client_getRating_1_1`
 - Method Iteration: `Client_getRating_1`
 - Implementing Class: `Client_getRating_1_1`
 - Implementation Version: `1`
 
 **Invocation**
+
 - Label / Name: `ExampleRating` (max 25 characters)
 - Invocation Call: `ExampleRating`
 - Service: `Client` / Method: `getRating` / Iteration: `1` / Implementation Version: `1`
