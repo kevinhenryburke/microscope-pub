@@ -24,6 +24,7 @@ markdown_extensions:
 nav:
   - About Microscope: MicroscopeAbout.md
   - Solution: MicroscopeSolution.md
+  - Agents and AI: MicroscopeAIAgents.md
   - Security: MicroscopeSecurity.md
   - Installation: installation/MicroscopeInstallation.md
   - Developer Guide: MicroscopeDeveloperGuide.md
