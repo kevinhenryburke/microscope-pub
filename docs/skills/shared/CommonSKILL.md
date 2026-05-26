@@ -63,6 +63,7 @@ These referential links **MUST** be consistent across all generated metadata:
 ## Rules for Service Metadata
 
 Create a `Service.{ServiceName}.md-meta.xml` using the patterns in the provided examples. Required fields:
+
 - `mscope__Description__c` — a meaningful description of the service
 - `mscope__Downable__c` — default to `false`
 - `mscope__Managed_by_Namespace__c` — default to `false`
@@ -78,6 +79,7 @@ Create a `Service_Method.{ServiceName}_{method}_{businessIteration}.md-meta.xml`
 ## Rules for Service_Implementation Metadata
 
 Create a `Service_Implementation.{ServiceName}_{method}_{businessIteration}_{techVersion}.md-meta.xml`. Required fields:
+
 - `mscope__Implementing_Class__c` — must exactly match the Apex class name
 - `mscope__Implementing_Flow__c` — set to `xsi:nil="true"` (Apex-only)
 - `mscope__Service_Method__c` — must match Service_Method label
@@ -88,6 +90,7 @@ Create a `Service_Implementation.{ServiceName}_{method}_{businessIteration}_{tec
 Create `Invocation.{InvocationCallName}.md-meta.xml` in the invocation base folder. Use the invocation examples as a reference. 
 
 **Defaults** (unless the user specifies otherwise):
+
 - `mscope__Invocation_Mechanism__c` = `Sync`
 - `mscope__Audit_Invocation__c` = `AuditSync`
 - `mscope__Invocation_Metadata_Type__c` = `Metadata Record`
@@ -99,6 +102,7 @@ Create `Invocation.{InvocationCallName}.md-meta.xml` in the invocation base fold
 - `mscope__Business_Iteration__c` = `1.0`
 
 **Must be consistent with service-side metadata:**
+
 - `mscope__Service_Name__c` must match Service label
 - `mscope__Method__c` must match Service_Method `mscope__Method__c`
 - `mscope__Input_Definition__c` must match Service_Method `mscope__Input_Definition__c`
@@ -149,6 +153,7 @@ global inherited sharing class {ClassName} implements mscope.IImplementation {
 ### Handling Multiple Input Arguments
 
 If the method being refactored has multiple input arguments:
+
 - The Service_Method `mscope__Input_Definition__c` must be `Map<String,Object>`
 - The Invocation `mscope__Input_Definition__c` must be `Map<String,Object>`
 - The implementation class `dispatch()` must cast `inputData` to `Map<String,Object>` and extract keys by name
@@ -179,6 +184,7 @@ global Object dispatch(mscope.InvocationDetails invocationDetails, Object inputD
 ## Rules for the Test Class
 
 Any pre-existing test classes for the Apex method being refactored should be rewritten as test classes for the new Service_Implementation class. If no test classes exist, write new ones. The test class must:
+
 - Have the same name as the implementation class with the suffix `_Test`
 - Reside in the same folder as the implementation class
 - Use `mscope.InvocationDetails_Test.createEmptyInvocationDetails()` to create test InvocationDetails

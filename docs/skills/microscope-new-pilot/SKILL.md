@@ -19,6 +19,7 @@ Acquire your grounding and take instructions from the human user to create a new
 Read the Human level documentation for this particular functionality at ./README.md
 
 Read the example files in `assets/` to understand the differences between a standard Invocation and a Pilot Invocation:
+
 - Original Invocation: `Invocation.Tab_Pilots_1.md-meta.xml`
 - Pilot Invocation: `Invocation.Tab_Pilots_1_Pilot.md-meta.xml`
 
@@ -39,6 +40,7 @@ Read this file to extract the existing Service (`mscope__Service_Name__c`), Meth
 
 You must now follow the rules defined in [../microscope-new-implementation-version/SKILL.md](../microscope-new-implementation-version/SKILL.md) to create a new implementation version of the existing service method that was referenced by the Invocation.
 This includes:
+
 - Finding the highest existing `{techVersion}` for the identified Service and Method.
 - Establishing a new version number by incrementing by `1`.
 - Cloning the `.cls`, `_Test.cls`, and `.md-meta.xml` artifacts and updating class names and version numbers accordingly.
@@ -50,6 +52,7 @@ This includes:
 ### Step 5 — Create Custom Permission
 
 Create a new Custom Permission to be used for the pilot. 
+
 - Create a file `force-app/main/default/customPermissions/{Pilot_Name_Custom_Permission}.customPermission-meta.xml`
 - Replace `{Pilot_Name_Custom_Permission}` with an appropriate name derived from the Service/Method or Invocation name.
 - It should have a basic structure suitable for a Custom Permission metadata file.
@@ -73,6 +76,7 @@ Create a new Invocation record based on the original Invocation, updated to poin
 ### Verify and Deploy
 
 Inform the user that the new pilot invocation and supporting artifacts have been created.
+
 1. List the new files and their locations (Implementation artifacts, Custom Permission, and Pilot Invocation). Ask the user if they would like the files to be moved to other locations.
 2. Remind the user to deploy the new artefacts to the Salesforce org.
 3. Suggest assigning the new Custom Permission to users who should be part of the pilot.

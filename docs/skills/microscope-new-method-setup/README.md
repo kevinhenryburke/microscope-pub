@@ -3,6 +3,7 @@
 In *Microscope*, a **Service** represents a collection of related **methods** that implement specific, related functionality. The methods give callers access to business functionality and all interfacing to this functionlity, at a code or process level, is via these methods. 
 
 A Service might be for example: 
+
 * a set of business functionality implemented in the org, like a *Pricing Service*, with the methods being ways a caller might get information like *getPrice*
 * an abstraction of an external system, for example a facade for a service for current foreign exchange rates with method like *getRate('USD','GBP')*
 * an internal shared process, like an *Audit Service*, with methods for logging audit information.

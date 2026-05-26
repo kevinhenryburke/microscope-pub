@@ -60,6 +60,7 @@ In your AI Code Generator terminal, ask the tool to "run the instructions for th
 This skill assists developers in configuring an Absent Service Stub, which is useful when developing a feature within a partial environment (like a DX unlocked package or scratch org) where some required Services might not be present.
 
 It involves:
+
 - Prompting for the invocation name.
 - Asking the user whether they want help getting the stub Apex implementation class created, the custom setting script written, or both.
 - If creating the Apex class, offering to amend the invocation metadata file to add the name of the newly created stub class.

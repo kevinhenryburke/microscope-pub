@@ -1,5 +1,7 @@
 # Microscope Security
 
+> **Prerequisite reading**: This document covers security controls within the Microscope framework. It assumes familiarity with the core framework — the Service Model, Invocation Permissions, and Stub Patterns — all of which are described in [MicroscopeSolution.md](MicroscopeSolution.md).
+
 Microscope provides mechanisms to restrict when and by whom an Invocation or Service can be run, configured entirely in metadata with no code changes required.
 
 ## Restricting Invocations By Permission

@@ -49,6 +49,7 @@ When you are aware of the invocation details and folder locations, generate all 
 You must now follow the rules defined in [../microscope-new-invocation-record/SKILL.md](../microscope-new-invocation-record/SKILL.md) to create the `Invocation__mdt` metadata file.
 
 Pass through all inputs already gathered in Phase 1:
+
 - `InvocationCallName` — use the name agreed with the user (must be ≤ 25 characters)
 - `ServiceName`, `MethodName`, `BusinessIteration`
 - `InputDefinition`, `OutputDefinition` — from the method signature

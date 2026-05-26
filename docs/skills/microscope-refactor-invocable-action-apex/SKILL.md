@@ -47,6 +47,7 @@ When you are aware of the class, method, and folder locations:
 ### Review and Demo
 
 Follow the post-generation steps in [../microscope-refactor-method/SKILL.md](../microscope-refactor-method/SKILL.md) to:
+
 1. Clarify invocation configuration (namespace, sync/async, auditing, etc.).
 2. Provide a Demo script in the `demo/force-app/scripts` folder.
 

@@ -18,6 +18,7 @@ Read the Human level documentation for this particular functionality at ./README
 
 ### Step 2 — Establish User Request
 Prompt the user for the following required information:
+
 - The name of a Service-side *Method Iteration* record.
 - Whether they want you to help get the specific Apex class created for this scenario, the custom setting script written, or both.
 - If creating the Apex class, offer to also amend the Service metadata file to add the name of the newly created stub class.
@@ -51,5 +52,6 @@ if (success) {
 ---
 
 ## Phase 3: Post-Generation Review (Interactive)
+
 1. Inform the user that the script is created
 2. Outline how they can run the Apex script to immediately replicate down behaviour in their org data. Offer to run it for them if this is within your allowed permissions.

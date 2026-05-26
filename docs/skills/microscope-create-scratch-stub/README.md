@@ -55,6 +55,7 @@ In your AI Code Generator terminal, ask the tool to "run the instructions for th
 This skill assists developers in configuring a Scratch Stub. Scratch Stubs are useful in early-stage development to mock features before a real implementation is available, or to guarantee consistent execution within Unit Tests. 
 
 It involves:
+
 - Prompting for the service method name and the intended stub class name.
 - Asking the user whether they want help getting the stub Apex implementation class created, the custom setting script written, or both.
 - Generating an Execute Anonymous script to create the custom setting enabling the Scratch Stub for the specific service method by calling `StubUtil.createScratchStub()`.

@@ -1,6 +1,7 @@
 # Invocation Pilots
 
 **Invocation Pilots** are provided by *Microscope* to support temporary fixtures in test or production environments, where different processing is required for a subset of users for a short period. This might be to facilitate one of many real-world scenarios we see in enterprise orgs:
+
 * to *pilot functioality in an org* for a subset of users. 
 * *smoke testing* prior to an emergency *hot-fix* when a bug is hitting production. 
 * to handle an urgent business change. 
@@ -53,6 +54,7 @@ Suppose a Quoting Service calls a Pricing Service, and you want to deploy a new 
 To solve this, create a new Implementation Version of the Pricing service method and a new Custom Permission. Then, create a Pilot Invocation record for the caller that specifies this new custom permission and points to the new Pricing Service implementation. Add the Custom Permission to the 100 pilot users.
 
 The majority of users without the Custom Permission will continue using the previous implementation. Once confident in the pilot:
+
 * Update the standard *Invocation* record to point to the new implementation.
 * Delete the Pilot Invocation record and the Custom Permission.
 

@@ -56,6 +56,7 @@ In your AI Code Generator terminal, ask the tool to "run the instructions for th
 This skill assists developers in configuring an Absent Connection Stub, primarily used to stub non-existing artefacts and external integrations in test environments.
 
 It involves:
+
 - Prompting for the name and iteration of a Method Iteration.
 - Asking the user whether they want help getting the stub class created, the custom setting script written, or both.
 - If creating the Apex class, offering to amend the Service metadata file to add the name of the newly created stub class.

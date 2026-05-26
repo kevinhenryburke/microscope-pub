@@ -29,6 +29,7 @@ Ask the user for the root folder in which you will create the Service-side metad
 ### Step 4 — Establish Invocation Details
 
 Follow the interactive steps in [../microscope-new-apex-invocation/SKILL.md](../microscope-new-apex-invocation/SKILL.md) to establish:
+
 1. The Invocation Base Folder.
 2. The Invocation Namespace.
 
@@ -46,6 +47,7 @@ Create the Service and Method Iteration metadata, and the implementation class w
 
 ### Step 3 — Caller-Side Implementation (Delegated)
 Apply the skill `/skill/microscope-new-apex-invocation` to:
+
 1. Create the Invocation metadata.
 2. Update the body of the original method to invoke the new service via the Microscope framework using the canonical pattern defined in that skill.
 
@@ -55,6 +57,7 @@ Apply the skill `/skill/microscope-new-apex-invocation` to:
 
 ### Review and Demo
 Follow the post-generation steps in [../microscope-new-apex-invocation/SKILL.md](../microscope-new-apex-invocation/SKILL.md) to:
+
 1. Clarify the invocation configuration (namespace, sync/async, auditing, etc.).
 2. Provide a Demo script in the `demo/force-app/scripts` folder.
 

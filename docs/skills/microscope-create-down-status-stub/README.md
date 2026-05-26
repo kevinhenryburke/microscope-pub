@@ -11,6 +11,7 @@ By adding a custom setting, alternative (Down Alternate) implementations will ru
 ### How to use the Pattern
 
 To prepare the pattern:
+
 * For each related *Method Iteration* record that should have alternative processing when the service is down, set the field *Down_Service_Implementing_Class__c* with the name of a method to run when the Service is marked as Down. 
 * Write the *Down_Service_Implementing_Class__c* method. This method will need to implement the input and output definitions specified by the *Method Iteration* as it will need to run in its place.
 * In the *Service CMT* Record for the Service, set the field *Downable__c* to true.
@@ -59,6 +60,7 @@ In your AI Code Generator terminal, ask the tool to "run the instructions for th
 This skill assists developers in configuring a Down Status Stub, allowing testing scenarios to verify fault tolerance when a Service is entirely unavailable or down.
 
 It involves:
+
 - Prompting for the method name and iteration of a Method Iteration.
 - Asking the user whether they want help getting the specific Apex class created, the custom setting script written, or both.
 - If creating the Apex class, offering to amend the Service metadata file to add the name of the newly created stub class.

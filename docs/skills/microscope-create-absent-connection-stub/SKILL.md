@@ -18,6 +18,7 @@ Read the Human level documentation for this particular functionality at ./README
 
 ### Step 2 — Establish User Request
 Prompt the user for the following required information:
+
 - The method name and iteration of a Method Iteration record.
 - Whether they want you to help get the mock Apex class created, the custom setting script written, or both.
 - If creating the mock Apex class, offer to also amend the Service metadata file to add the name of the newly created stub class.
@@ -49,6 +50,7 @@ mscope.StubUtil.createAbsentConnectionStub(serviceMethodName);
 ---
 
 ## Phase 3: Post-Generation Review (Interactive)
+
 1. Inform the user that the generation is complete.
 2. Provide instructions for them to run the created Apex script and review the configured metadata.
 3. Outline where the newly created Apex stub classes have been stored.

@@ -18,6 +18,7 @@ Read the Human level documentation for this particular functionality at ./README
 
 ### Step 2 — Establish User Request
 Prompt the user for the following required information:
+
 - The `DeveloperName` of the Invocation they want to create an Absent Service Stub for.
 - The name of the Apex class that will implement the Absent Service Stub.
 - Whether they want you to help get the mock Apex class created, the custom setting script written, or both.
@@ -60,6 +61,7 @@ mscope.StubUtil.createAbsentServiceStubForInvocationCall('<InvocationCall>');
 ---
 
 ## Phase 3: Post-Generation Review (Interactive)
+
 1. Inform the user that the generated Apex class (if any) and script are ready.
 2. Provide instructions for them to run the Execute Anonymous script in their org.
 3. Crucially, instruct the user to update the `Absent_Service_Stub_Class__c` field on the `Invocation__mdt` custom metadata record referencing the newly created Apex class name.

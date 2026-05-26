@@ -279,6 +279,7 @@ For `Map<String, Object>` I/O, attach a `IMultiArgMap` implementation to the Met
 Microscope provides **Standard Invocation Actions** in the *Microscope Actions* category in Flow Builder. Each action handles a specific input/output type pair (e.g. `ActionStringString`, `ActionSObjectSObject`).
 
 An Invocation Action:
+
 - Takes an `InvocationName` String plus typed business input as `@InvocableVariable` parameters.
 - Returns `InvocationDetails` plus typed business output.
 
@@ -295,6 +296,7 @@ If a bespoke input/output type is required, create a new Invocation Action class
 ## Implementing a Service with a Flow
 
 Set the Service Implementation CMT record to:
+
 - `Implementation Type` = `Flow`
 - `Implementing Flow` = the API name of the Autolaunched Flow
 
@@ -309,6 +311,7 @@ Flow output must be retrieved by name. Set `Output_Map_Data_Validation_Class` on
 ### Invocation Details in the Flow
 
 Add a flow variable:
+
 - API Name: `invocationDetails` / Type: Apex-Defined / Apex Class: `mscope__InvocationDetails` / Available for input: checked
 
 At the end of the flow, add the *Microscope: Flow Update Invocation* action and map `invocationDetails` to it. This action also accepts `businessOutcome`, `errorCode`, and `errorReferences` (a collection of `mscope__ServiceErrorReference`).
@@ -361,6 +364,7 @@ String returnedValue = (String) sinv.invokeService('Superman');
 ### Explicit Namespaces (developer-provided)
 
 Provide namespace explicitly for:
+
 - Input and Output Definitions (Invocation and Method Iteration CMT)
 - Input and Output Map Data Validation classes
 - Platform Events used by the framework

@@ -68,6 +68,7 @@ When you have identified the source version and the new version number, generate
 ### Verify and Deploy
 
 Inform the user that the new implementation version has been created.
+
 1.  List the new files and their locations.
 2.  Remind the user to deploy the new artefacts to the Salesforce org.
 3.  Suggest running the tests for the new implementation version using the created test class.

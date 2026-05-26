@@ -5,6 +5,7 @@ This guide walks you through the essential steps to implement an Apex service in
 ## Step 1: Define Input and Output Types
 
 Every service requires predefined input and output types. For our simple Rating Service, we will use the Apex literal `String` for both input and output.
+
 - **Input:** Client Name (String)
 - **Output:** Output text containing the rating (String)
 
@@ -80,11 +81,13 @@ global inherited sharing class Client_getRating_1_1 implements mscope.IImplement
 To make this execution decoupled, create Custom Metadata Type (CMT) records in your Salesforce setup to configure the service. Do this in the following order:
 
 ### 1. Service CMT
+
 - **Label:** Client
 - **Service Name:** Client
 - **Description:** Example Service for learning Microscope.
 
 ### 2. Method Iteration CMT
+
 - **Label:** Client_getRating_1
 - **Method Iteration Name:** Client_getRating_1
 - **Service:** Client
@@ -93,6 +96,7 @@ To make this execution decoupled, create Custom Metadata Type (CMT) records in y
 - **Output Definition:** String
 
 ### 3. Service Implementation CMT
+
 - **Label:** Client_getRating_1_1
 - **Service Implementation Name:** Client_getRating_1_1
 - **Method Iteration:** Client_getRating_1
@@ -101,6 +105,7 @@ To make this execution decoupled, create Custom Metadata Type (CMT) records in y
 
 ### 4. Service Error Code CMT
 We used an error code in our Apex implementation above (`RatingSystemError`), which must exist in your org.
+
 - **Label / Service Error Code Name:** RatingSystemError
 - **State:** Rating System Error
 - **Message:** Rating System Error
@@ -109,6 +114,7 @@ We used an error code in our Apex implementation above (`RatingSystemError`), wh
 
 ### 5. Invocation CMT
 Create the Invocation configuration that callers will reference.
+
 - **Label:** ExampleRating
 - **Invocation Name:** ExampleRating
 - **Invocation Call:** ExampleRating

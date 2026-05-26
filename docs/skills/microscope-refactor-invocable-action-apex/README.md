@@ -8,6 +8,7 @@ In your AI Code Generator terminal, simply ask the tool to:
 > "Run the skill in `skills/microscope-refactor-invocable-action-apex/SKILL.md` to refactor an Agentforce Action in Apex."
 
 You will be asked to provide:
+
 1. The **name or file path** of the Apex class.
 2. The target folders for service and invocation metadata.
 

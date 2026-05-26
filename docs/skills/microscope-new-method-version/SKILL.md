@@ -81,6 +81,7 @@ When you have identified the source version and the new method Signature Version
 ### Verify and Deploy
 
 Inform the user that the new method version has been created.
+
 1.  List the new files and their locations.
 2.  Remind the user to deploy the new artefacts to the Salesforce org after they have implemented the business logic in the new implementation class.
 

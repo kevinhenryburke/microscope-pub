@@ -19,6 +19,7 @@ Read the Human level documentation for this particular functionality at ./README
 
 ### Step 2 — Establish User Request
 Prompt the user for the following required information:
+
 - The `Artefact Name` (the Invocation's DeveloperName) for the Scratch Stub. The user will understand this as the name of the Invocation call they want to create a stub for so use that when talking to the user.
 - The name of the Apex class that will implement the Scratch Stub functionality.
 - Whether they want you to help get the mock Apex class created, the custom setting script written, or both.
@@ -52,5 +53,6 @@ if (success) {
 ---
 
 ## Phase 3: Post-Generation Review (Interactive)
+
 1. Inform the user that the generated Apex class and/or scripts are ready.
 2. Provide instructions for them to deploy the class and run the Apex script in their selected test or dev environment.

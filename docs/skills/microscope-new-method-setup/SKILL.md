@@ -37,6 +37,7 @@ When you are aware of the method and folder locations, generate all artefacts fo
 ### Rules for Generating Service Side Artefacts
 
 For the service side work, you must create:
+
 1. `Service` metadata
 2. `Service_Method` metadata
 3. The underlying Apex Class or Flow implementation
