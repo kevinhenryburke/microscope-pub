@@ -36,38 +36,38 @@ nav:
       - Skills ZIP: downloads/microscope-skills.md
     - Skills Library:
       - Create Absent Connection Stub:
-        - SKILL: skills/microscope-create-absent-connection-stub/SKILL.md
         - README: skills/microscope-create-absent-connection-stub/README.md
+        - SKILL: skills/microscope-create-absent-connection-stub/SKILL.md
       - Create Absent Service Stub:
-        - SKILL: skills/microscope-create-absent-service-stub/SKILL.md
         - README: skills/microscope-create-absent-service-stub/README.md
+        - SKILL: skills/microscope-create-absent-service-stub/SKILL.md
       - Create Down Status Stub:
-        - SKILL: skills/microscope-create-down-status-stub/SKILL.md
         - README: skills/microscope-create-down-status-stub/README.md
+        - SKILL: skills/microscope-create-down-status-stub/SKILL.md
       - Create Scratch Stub:
-        - SKILL: skills/microscope-create-scratch-stub/SKILL.md
         - README: skills/microscope-create-scratch-stub/README.md
+        - SKILL: skills/microscope-create-scratch-stub/SKILL.md
       - New Apex Invocation:
-        - SKILL: skills/microscope-new-apex-invocation/SKILL.md
         - README: skills/microscope-new-apex-invocation/README.md
+        - SKILL: skills/microscope-new-apex-invocation/SKILL.md
       - New Implementation Version:
-        - SKILL: skills/microscope-new-implementation-version/SKILL.md
         - README: skills/microscope-new-implementation-version/README.md
+        - SKILL: skills/microscope-new-implementation-version/SKILL.md
       - New Invocation Record:
-        - SKILL: skills/microscope-new-invocation-record/SKILL.md
         - README: skills/microscope-new-invocation-record/README.md
+        - SKILL: skills/microscope-new-invocation-record/SKILL.md
       - New Method Setup:
-        - SKILL: skills/microscope-new-method-setup/SKILL.md
         - README: skills/microscope-new-method-setup/README.md
+        - SKILL: skills/microscope-new-method-setup/SKILL.md
       - New Method Version:
-        - SKILL: skills/microscope-new-method-version/SKILL.md
         - README: skills/microscope-new-method-version/README.md
+        - SKILL: skills/microscope-new-method-version/SKILL.md
       - New Pilot:
-        - SKILL: skills/microscope-new-pilot/SKILL.md
         - README: skills/microscope-new-pilot/README.md
+        - SKILL: skills/microscope-new-pilot/SKILL.md
       - Refactor Invocable Action Apex:
-        - SKILL: skills/microscope-refactor-invocable-action-apex/SKILL.md
         - README: skills/microscope-refactor-invocable-action-apex/README.md
+        - SKILL: skills/microscope-refactor-invocable-action-apex/SKILL.md
       - Refactor Method:
-        - SKILL: skills/microscope-refactor-method/SKILL.md
         - README: skills/microscope-refactor-method/README.md
+        - SKILL: skills/microscope-refactor-method/SKILL.md
