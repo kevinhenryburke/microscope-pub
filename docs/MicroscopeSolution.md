@@ -1,6 +1,26 @@
 ## Microscope Solution
- 
-The solution builds on established Enterprise delivery concepts such as service-oriented architectures, microservices, and dependency injection, and combines them with Salesforce Lightning Platform features to create a framework that is flexible enough to handle a wide range of Enterprise challenges. Through a single paradigm, it supports Salesforce DX adoption, packaging, technical debt avoidance and mitigation, build hygiene, multiple lines of business, regional variations, prompting, Agentforce Actions, appropriate governance, release management, pilots, A/B testing, concurrent versions, environment management, responses to Gen AI prompt safety breaches, safety testing and retesting assurance, standardized security behind exposed endpoints, team onboarding and mobility, build visibility, design quality, and full runtime audit and intelligence.
+
+Microscope is a configuration-driven framework that gives Enterprise Salesforce orgs governance, audit, and runtime control over invocations across Apex, Flow, Agentforce Actions, and OmniStudio. It is designed to make delivery faster and lower-risk while keeping packaging, testing, and rollout hygiene intact.
+
+Five outcomes it supports for delivery programs:
+
+- **Ship smaller, safer, more often** — concurrent service versions, permission-gated pilots, and instant rollback by metadata change rather than redeploy. See [Service-side Versions](#service-side-versions) and [Invocation Permission-Based Processing](#invocation-permission-based-processing).
+- **Let teams move at different speeds** — regional, line-of-business, and package teams can deliver their own service versions without forcing a coordinated org-wide release.
+- **Open up enterprise development and testing** — smoother DX and unlocked-package adoption, alternate processing when integrations or LLMs are missing, deterministic substitutes for Gen AI responses where determinism is needed, and graceful degradation in production when connections go down. See [MicroscopeStubs.md](MicroscopeStubs.md).
+- **Govern Generative AI deployment** — Trust Layer-driven failover and blocking, permission-gated prompt rollout, and regional / jurisdictional Prompt Template variants. See [Generative AI Benefits](#generative-ai-benefits).
+- **Audit and analyse, in one shape** — every invocation across Apex, Flow, Agentforce, and OmniStudio is captured in a single structure that can flow into Data 360 and CRM Analytics for ops, security, and usage intelligence. See [Audit and Errors](#audit-and-errors).
+
+AI-authoring skills are provided so delivery teams can adopt the patterns without writing the framework's metadata by hand. The full benefit catalogue is in [MicroscopeBenefits.md](MicroscopeBenefits.md). The rest of this document is the architectural introduction.
+
+### Companion Documents
+
+This document describes the core framework. The following companion documents build on it for specific audiences and concerns:
+
+- [MicroscopeAIAgents.md](MicroscopeAIAgents.md) — How the framework supports Generative AI: Prompt Service, prompt safety, role-based prompts, and Gen AI testing patterns. *For architects and developers building Agentforce or LLM-driven features.*
+- [MicroscopeEnterpriseDelivery.md](MicroscopeEnterpriseDelivery.md) — How Microscope addresses enterprise-scale delivery challenges around visibility, governance, and release management. *For executives, programme leads, and enterprise architects.*
+- [MicroscopeDeveloperGuide.md](MicroscopeDeveloperGuide.md) — Hands-on patterns and conventions for building on the framework. *For developers and tech leads.*
+- [MicroscopeSecurity.md](MicroscopeSecurity.md) — Permission-based and context-based controls on when and by whom an Invocation can be run. *For architects, security reviewers, and developers exposing functionality to external systems.*
+- [MicroscopeStubs.md](MicroscopeStubs.md) — Detailed reference for the stub patterns introduced below (Scratch, Absent Service, Absent Connection, Down Status). *For developers and environment managers.*
 
 ### Installation
 
@@ -14,7 +34,7 @@ The solution uses a combination of Lightning Platform features.
 
 - Custom Metadata Types (*CMTs*) to define the structure of the production build and the mechanisms for special processing in *lower orgs* (scratch orgs and sandboxes).
 
-- Custom Settings for temporary changes in production and to configure features that vary across environments. CMT records are the same across all test environments; Custom Settings are only used when environmental differences occur.**
+- Custom Settings for temporary changes in production and to configure features that vary across environments. CMT records are the same across all test environments; Custom Settings are only used when environmental differences occur.
 
 - Custom Permissions to enable differences in processing for different groups of users.
 
@@ -190,7 +210,7 @@ flowchart TB
     class SVC,SVCMETA purpleBox
 ```
 
-The framework's transaction audit has a simple, flat structure that is well suited to error detection, alerting, and upload into analytics platforms. It also supports multi-level auditing of related invocations. If one parent invocation runs an embedded child invocation inside its Service implementation, the child's audit record links back to the parent, providingi an **Invocation Call Stack**.
+The framework's transaction audit has a simple, flat structure that is well suited to error detection, alerting, and upload into analytics platforms. It also supports multi-level auditing of related invocations. If one parent invocation runs an embedded child invocation inside its Service implementation, the child's audit record links back to the parent, providing an **Invocation Call Stack**.
 
 Invocations may be **rerun** from the Audit Table by using the *Invocation Details* and the serialized input data to recreate the original invocation.
 
@@ -225,6 +245,8 @@ The Audit table also provides runtime benefits.
 - An alerting framework, for example one integrated with Slack, can be layered on top of Audit and triggered for defined subsets of records such as errors with specific error codes. 
 
 Note that Auditing is optional in the framework and is controlled at the invocation level by the *Invocation CMT* records. High data volumes or sensitive data are examples that might lead teams to choose not to audit.
+
+This single audit shape — one consistent structure across Flow, Apex, Agentforce, and OmniStudio invocations — is the substrate that powers operations, security, and AI grounding from the same source.
 
 The details of the Audit process can be found [here](../docs/MicroscopeAudit.md)
 
@@ -474,152 +496,16 @@ Further challenges arise in production environments where different processing i
 
 ### Stubs and Alternates
 
-Microscope is designed to handle all these scenarios through the use of **Stub Patterns**. For each pattern we list which side the pattern is applied to (*Invocation* or *Service*), the environment type (*Partial Code* or *Full Code*), what level the stub is switched on at (e.g. by *Invocation Name*, *Invocation Call*, *Method*, *Service* ) and who needs to do the work to switch to stub processing.
+Microscope handles partial environments, missing connections, and production safety scenarios through four **stub patterns**. A stub provides an alternate implementation that runs in place of the real Service Implementation, configured through metadata and Custom Settings rather than code branches.
 
-#### Scratch Stubs
+| Pattern                     | Side       | Environment   | Triggered By                                   | Primary Use Case                                              |
+|-----------------------------|------------|---------------|------------------------------------------------|---------------------------------------------------------------|
+| Scratch Stub                | Invocation | Partial code  | Custom Setting present                         | Early development before a real implementation exists         |
+| Absent Service Stub         | Invocation | Partial code  | Service CMT absent in org                      | DX / unlocked package separation                              |
+| Absent Connection Stub      | Service    | Full code     | Custom Setting present                         | Test envs missing integrations / Gen AI determinism / token cost |
+| Down Status Stub            | Service    | Full code     | Custom Setting (manual or programmatic)        | Production maintenance / outage / Gen AI safety blocking      |
 
-* Side: Invocation
-* Environment: Partial Code
-* Pattern Use Case: Early Development
-* Maintained By: Invocation-Side Developers add Custom Setting in org
-* Level: Invocation Name
-
-Before a developer has a *real* implementation to work against she can define a simple **Scratch Stub** to use to make a quick start on building screens and processes. This pattern is used to provide a temporary stub implementation to allow development to proceed in the absence of a full implementation and is triggered entirely by a Custom Setting without any permanent metadata. 
-
-```mermaid
-flowchart LR
-    A[("&nbsp;Invocation<br>Record&nbsp;")]:::white --> B{"Custom Setting<br>Present?"}
-    B -->|Yes| C[Run Scratch Stub]:::green
-    B -->|No| D[Run Implementation]:::purple
-
-    classDef white fill:#ffffff,stroke:#555555,color:#000000
-    classDef green fill:#90EE90,stroke:#444444,color:#000000
-    classDef purple fill:#D8B4FE,stroke:#444444,color:#000000
-```
-
-* **Setup a Scratch Stub**: You can use the [AI Skill](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-scratch-stub/SKILL) or create a stub by hand following the [Documentation](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-scratch-stub/)
-
-
-#### Absent Service Stubs
-
-* Side: Invocation
-* Environment: Partial Code
-* Pattern Use Case: Build Separation, Agility, DX Development and Packaging
-* Maintained By: *Invocation CMT* field and class maintained by Invocation-Side Developers.
-* Level: The stub value is at the invocation level. Whether to use Absent Service Stub processing can be controlled at three levels of granularity — Org-wide, per Invocation Call, or per Invocation Name — using Environment Setting records. 
-
-This is a more permanent metadata-based pattern for partial-code environments. A stub implementation is automatically called in place of the real implementation when the invocation's target *Service* is not present in the org. This is particularly useful in Scratch orgs and DX (unlocked) package development, for example in Scratch Stubs or Package development scenarios. Unlike *Scratch Stub* custom settings and classes these are, in essence, *part of the build* that always runs in partial environments when the target *Service* is absent.
-
-* **Setup an Absent Service Stub**: These are configured once for an invocation and are pushed across environments. They are invoked by the absence of a *Service CMT* record. To implement either use the [AI Skill](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-absent-service-stub/SKILL) or create manually using the [Documentation](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-absent-service-stub/)
-
-The following diagram shows the stub flow for the Invocation side. Note that these take precedence over the Service-side stubs we'll see soon:
-
-```mermaid
-flowchart LR
-    Metadata[("&nbsp;Invocation<br>Record&nbsp;")]
-    style Metadata fill:#FFFFFF,stroke:#333,stroke-width:2px
-    
-    subgraph Prod [Production Setup]
-        direction LR
-        style Prod fill:transparent,stroke:#333,stroke-width:2px
-        
-        NoStub[No Invocation Side Stub]
-        style NoStub fill:#FFFFFF,stroke:#333,stroke-width:2px
-        
-        RunServiceSide[Run Service Side]
-        style RunServiceSide fill:#E1BEE7,stroke:#333,stroke-width:2px
-        
-        NoStub --> RunServiceSide
-    end
-
-    subgraph Dev [Developer Setup]
-        direction LR
-        style Dev fill:transparent,stroke:#333,stroke-width:2px
-        
-        HasStub[Has Scratch Stub Setting]
-        style HasStub fill:#C8E6C9,stroke:#333,stroke-width:2px
-        
-        RunInvocationStub[Run Scratch Stub]
-        style RunInvocationStub fill:#C8E6C9,stroke:#333,stroke-width:2px
-        
-        HasStub --> RunInvocationStub
-        
-        AbsentService[Service Absent]
-        style AbsentService fill:#FFFFFF,stroke:#333,stroke-width:2px
-        
-        RunInvocationStub2[Run Absent Service Stub]
-        style RunInvocationStub2 fill:#C8E6C9,stroke:#333,stroke-width:2px
-        
-        AbsentService --> RunInvocationStub2
-    end
-
-    Metadata -->|otherwise| NoStub
-    Metadata -->|if| HasStub
-    Metadata -->|else if| AbsentService
-```
-
-#### Absent Connection Stub
-
-* Side: Service
-* Environment: Full Code
-* Pattern Use Case: Processing in test environments
-* Maintained By: Service-side Developers write the stub, Environment Manager maintains Custom Settings
-* Level: Custom setting at *Service* level, stubs defined at *Method Iteration* level.
-
-When an integration, data grounding or LLM interaction is not available in a full code environment, **Absent Connection Stubs** provide an alternate implementation, switchable via a Custom Setting. The stub provides a well-formatted response to the Invocation side, allowing the Invocation side to function as it would in production even when the testing environment is not fully wired.
-
-Absent Connection Stubs can also act as a **Facade to a Managed Package** that is hard to configure in test environments. In these cases all of the coded references to the managed package should be from Service Implementations. *Absent Connection Stubs* can run an alternative implementation of each method, by-passing the Managed Package altogether. 
-
-Another key use case is to provide an alternative to calling a *Prompt Template* in non-production environments. This may be useful to provide output when there is no connected LLM, deterministic output for testing business processes or simple to save on *token consumption* in lower environments. 
- 
-**How to Implement**: If you wish to implement this pattern, you can either run the relevant AI skill or check out the documentation that comes with the skill.
-
-* **Setup an Absent Connection Stub**: [AI Skill](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-absent-connection-stub/SKILL) | [Documentation](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-absent-connection-stub/)
-
-#### Consistent Unit Tests
-
-* Side: Invocation
-* Environment: All
-* Pattern Use Case: Consistent Unit Tests
-* Maintained By: Invocation-Side Developers add Custom Settings in test setup
-* Level: As per pattern (Scratch Stubs and Absent Connection Stubs)
-
-We can think of Unit testing as a partial environment. It takes place in a modified runtime with greatly limited access to records and no external systems available. 
-
-*Scratch Stubs* can be invoked in unit tests to provide **consistent test execution** from scratch / partial org development through to production. Inserting a *Scratch Stub custom setting* in the test setup forces a uniform behaviour for an invocation regardless of the configuration of the test environment.
-
-Unit tests should not use *Absent Service Stubs*. 
-If the target Service is present in a higher environment the *Absent Service Stub* custom setting will be ignored at runtime and in unit tests, so testing outcomes might be different in partial-code and full-code orgs.
-
-*Absent Connection Stubs* can help in unit tests that, for example, cover code running integrations or interfaces to an LLM. Development teams often implement mocking processing in code to test these elements. This approach avoids that complexity, is more visible and controllable in configuration, and completely avoids *Test.isRunningTest()* switches hidden in code.
-
-A key principle of Unit Testing is that each test method should be targetted to validate just one thing. Decoupling the Service Side provides clear and granular scope for testing the Invocation Side and the Service Side independently.
-
-#### Alternate Processing when External is Down
-
-* Side: Service
-* Environment: Full Code
-* Pattern Use Case: Graceful processing in production environments when connections are down or during maintenance windows.
-* Maintained By: Service-side Developers write the stub, Environment Manager maintains Custom Settings
-* Level: Service
-
-A **Down Status Stub** is used in production environments to provide alternative processing when a Service is unavailable. Stub processing can be triggered in two ways
-
-1. An Administrator can create the Custom Setting to switch functionality. 
-2. Implementations can also **programmatically** set a Service to be Down based on data in service responses. 
-
-As mentioned, the primary use cases are to handle scheduled maintenance windows and graceful handling of outages. However there are others:
-
-* A Down Status Stub can also work as a safety mechanism when an LLM interaction needs to be shut down for toxicity or legal reasons. 
-* They can be coded to capture all outbound call data whilst the connection is down, to **prevent potential data loss**. Failed invocations can also potentially be rerun from the Audit tables as requiredonce the service is resumed.
-
-**How to Implement**: If you wish to implement this pattern, you can either run the relevant AI skill or check out the documentation that comes with the skill.
-
-* **Setup a Down Status Stub**: [AI Skill](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-down-status-stub/SKILL) | [Documentation](https://kevinhenryburke.github.io/microscope-pub/skills/microscope-create-down-status-stub/)
-
-#### Order of Priority 
-
-This is the Processing Order when an Invocation is run, should any stubs or overrides be configured.
+When an Invocation runs, the framework checks for stubs in a defined order. Invocation-side stubs take precedence over Service-side stubs, because they short-circuit the dispatch before service resolution.
 
 ```mermaid
 graph TB
@@ -651,7 +537,6 @@ graph TB
     classDef greenBox fill:#c1e1c1,stroke:#333,stroke-width:2px,color:#000000
     classDef purpleBox fill:#cbaacb,stroke:#333,stroke-width:2px,color:#000000
     classDef yellowBox fill:#fdfd96,stroke:#333,stroke-width:2px,color:#000000
-    classDef blueBox fill:#aec6cf,stroke:#333,stroke-width:2px,color:#000000
 
     class n0,n6 whiteBox
     class n1,n2 greenBox
@@ -659,11 +544,21 @@ graph TB
     class n0a,n5 yellowBox
 ```
 
+For per-pattern detail — including decision guidance on which pattern to pick, anti-patterns, and stubs in unit testing — see [MicroscopeStubs.md](MicroscopeStubs.md).
+
 ### Security Benefits
 
 Microscope provides permission-based and context-based mechanisms to restrict when and by whom an Invocation can be run. See [Microscope Security](../docs/MicroscopeSecurity.md) for the full details, including quiddity reference tables, unit test exemptions, and guidance on exposing invocations to external systems.
 
 ## Generative AI Benefits
 
-For details on how the framework supports Generative AI features — including the Prompt Service, Gen AI testing patterns, prompt safety, role-based processing, and change management — see [MicroscopeAIAgents.md](MicroscopeAIAgents.md).
+The framework's metadata-driven dispatch, permission-based variants, and Service-side stub patterns turn out to be exactly the primitives needed for enterprise-grade Gen AI deployment:
+
+- **Prompt safety** — Trust Layer scores can drive failover, threshold-based blocking, and "recent safest" template selection across a configured group of Prompt Templates.
+- **Permission-gated prompt rollout** — pilot a new Prompt Template to a subset of users via Custom Permissions, without forking or overwriting the existing template.
+- **Regional / jurisdictional variants** — different LLMs, or no LLM, for different countries, controlled by metadata rather than code.
+- **Test-environment grounding** — production-like retrieval payloads via stubs and deterministic LLM responses for business-process testing, with a side benefit of reduced token consumption.
+- **Trust Layer-enhanced audit** — every Prompt Template run is captured with safety, toxicity, and bias scores against user context, input, and output.
+
+For the full Gen AI architecture — including the Prompt Service, failover algorithms, and prompt change management workflow — see [MicroscopeAIAgents.md](MicroscopeAIAgents.md).
 
